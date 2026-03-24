@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>南香茶號 · 双语智能名片</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: #f5f7fb;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, sans-serif;
+            padding: 20px 16px 40px;
+            color: #1f2d3d;
+        }
+
+        .container {
+            max-width: 780px;
+            margin: 0 auto;
+        }
+
+        .lang-bar {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .lang-btn {
+            background: white;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 40px;
+            padding: 6px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #334155;
+        }
+        .lang-btn.active {
+            background: #3b82f6;
+            border-color: #3b82f6;
+            color: white;
+        }
+        .lang-btn:active { transform: scale(0.96); }
+
+        .card {
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            padding: 24px 20px;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-left: 4px solid #3b82f6;
+            padding-left: 14px;
+            color: #0f172a;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #334155;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 15px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 20px;
+            background: #ffffff;
+            font-family: inherit;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        .row-2col {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .row-2col .form-group {
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .business-card {
+            background: linear-gradient(135deg, #ffffff 0%, #fef9f0 100%);
+            border-radius: 28px;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,240,0.6);
+        }
+
+        .shop-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 8px;
+            word-break: break-word;
+        }
+
+        .shop-desc {
+            color: #475569;
+            font-size: 14px;
+            line-height: 1.4;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed #e9eef3;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            word-break: break-all;
+        }
+
+        .info-icon {
+            width: 28px;
+            font-size: 18px;
+            text-align: center;
+            color: #3b82f6;
+        }
+
+        .info-text {
+            flex: 1;
+            font-size: 15px;
+            color: #1e293b;
+        }
+
+        .info-text a {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            background: #f1f5f9;
+            color: #1e293b;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 2px 6px rgba(59,130,246,0.3);
+        }
+        .btn-primary:active { background: #2563eb; transform: scale(0.97);}
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid #cbd5e1;
+        }
+        .btn-outline:active { background: #f8fafc;}
+
+        .qr-area {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid #ecf3f9;
+        }
+        canvas.qr-canvas {
+            margin: 10px auto;
+            background: white;
+            padding: 8px;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 160px;
+            height: 160px;
+        }
+        .qr-tip {
+            font-size: 12px;
+            color: #5b6e8c;
+            margin-top: 6px;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 20px;
+        }
+
+        .mode-view .business-card {
+            background: white;
+            margin-bottom: 10px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 16px;
+            background: #eef2ff;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #3b82f6;
+            text-decoration: none;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator-1.4.4/qrcode.min.js"></script>
+</head>
+<body>
+
+<div class="container" id="app"></div>
+
+<script>
+    // ---------- 界面文字语言包 ----------
+    const uiText = {
+        zh: {
+            switchToZh: "中文",
+            switchToEn: "English",
+            cardHeaderInfo: "📇 店铺名片信息",
+            shopNameLabel: "店铺名称 *",
+            shopNamePlaceholder: "例: 南香茶號",
+            shopDescLabel: "店铺简介 / 标语",
+            shopDescPlaceholder: "一句话介绍店铺特色...",
+            phoneLabel: "联系电话",
+            phonePlaceholder: "+86 123 4567 8901",
+            emailLabel: "电子邮箱",
+            emailPlaceholder: "shop@example.com",
+            addressLabel: "店铺地址",
+            addressPlaceholder: "街道, 城市, 国家",
+            latLabel: "纬度 (可选)",
+            latPlaceholder: "例如: 30.228",
+            lngLabel: "经度 (可选)",
+            lngPlaceholder: "例如: 120.130",
+            websiteLabel: "官方网站 / 社交链接",
+            websitePlaceholder: "Instagram: ...\nWhatsApp: ...\nWeChat: ...",
+            websiteHint: "💡 可填写多个社交账号，一行一个",
+            coordHint: "💡 坐标和地址任选其一，用于查看位置",
+            previewHeader: "✨ 实时预览名片 (客户所见)",
+            qrHeader: "📱 分享二维码 (相机扫描)",
+            downloadQR: "⬇️ 下载二维码",
+            copyLink: "🔗 复制名片链接",
+            qrTipLine1: "✅ 全球通用 · 手机相机扫描即看",
+            qrTipLine2: "支持保存联系人、一键导航、拨打电话",
+            footer: "📌 扫描二维码后，客户可查看完整名片并保存联系方式/打开地图",
+            saveContact: "💾 保存联系人",
+            viewMap: "🗺️ 查看地图",
+            previewHint: "⬅️ 左侧表单修改后，二维码实时更新",
+            noDesc: "暂无简介",
+            copySuccess: "名片链接已复制，可分享给他人扫描",
+            copyFail: "复制失败，可手动复制地址栏",
+            mapConfirm: "选择地图打开方式:\n确定 → 使用 Google Maps (全球)\n取消 → 使用 高德地图 (中国)",
+            noAddress: "未提供地址信息",
+            call: "点击呼叫",
+            sendEmail: "发送邮件",
+            backEdit: "← 返回编辑名片",
+            scanAgain: "✨ 使用相机扫描原二维码可再次查看此名片 ✨",
+            saveContactTip: "保存联系方式到通讯录，随时联系店铺",
+            invalidData: "名片信息无效或已过期"
+        },
+        en: {
+            switchToZh: "中文",
+            switchToEn: "English",
+            cardHeaderInfo: "📇 Business Card Info",
+            shopNameLabel: "Shop Name *",
+            shopNamePlaceholder: "e.g., NANXIANG TEA HOUSE",
+            shopDescLabel: "Description / Slogan",
+            shopDescPlaceholder: "A short description of your shop...",
+            phoneLabel: "Phone Number",
+            phonePlaceholder: "+86 123 4567 8901",
+            emailLabel: "Email",
+            emailPlaceholder: "shop@example.com",
+            addressLabel: "Address",
+            addressPlaceholder: "Street, City, Country",
+            latLabel: "Latitude (optional)",
+            latPlaceholder: "e.g., 30.228",
+            lngLabel: "Longitude (optional)",
+            lngPlaceholder: "e.g., 120.130",
+            websiteLabel: "Website / Social Links",
+            websitePlaceholder: "Instagram: ...\nWhatsApp: ...\nWeChat: ...",
+            websiteHint: "💡 Multiple links, one per line",
+            coordHint: "💡 Use either address or coordinates for map",
+            previewHeader: "✨ Live Preview (What customers see)",
+            qrHeader: "📱 Share QR Code (Scan with camera)",
+            downloadQR: "⬇️ Download QR Code",
+            copyLink: "🔗 Copy Card Link",
+            qrTipLine1: "✅ Global ready · Scan with phone camera",
+            qrTipLine2: "Save contact, one-tap call & navigation",
+            footer: "📌 After scanning, customers can view full card, save contact & open map",
+            saveContact: "💾 Save Contact",
+            viewMap: "🗺️ View on Map",
+            previewHint: "⬅️ QR code updates as you edit",
+            noDesc: "No description",
+            copySuccess: "Card link copied, share it for scanning",
+            copyFail: "Copy failed, you can copy from address bar",
+            mapConfirm: "Choose map:\nOK → Google Maps (Global)\nCancel → Amap (China)",
+            noAddress: "No address provided",
+            call: "Tap to call",
+            sendEmail: "Send email",
+            backEdit: "← Back to Editor",
+            scanAgain: "✨ Scan the original QR code again to view this card ✨",
+            saveContactTip: "Save contact to your phone book to reach the shop anytime",
+            invalidData: "Invalid or expired business card"
+        }
+    };
+
+    // ---------- 双语内容数据 (中/英文独立) ----------
+    const defaultShopZh = {
+        name: "南香茶號 NANXIANG TEA HOUSE",
+        desc: "专注传统原叶茶 ｜ 百年中国茶文化 ｜ 茶空间 Traditional Chinese Tea House（Oolong Tea/Black Tea/White Tea/Green Tea/Dark Tea/Jasmine Tea）",
+        phone: "+86 (021) 64312052",
+        email: "nanxiangtea@hotmail.com",
+        address: "中国上海市徐汇区复兴西路18号",
+        website: "Instagram: NANXIANGTEAHOUSE\nWhatsApp/Kakao Talk: +82 10-4885-4196\nWeChat: Nanxiangtea8888",
+        lat: "",
+        lng: ""
+    };
+
+    const defaultShopEn = {
+        name: "NANXIANG TEA HOUSE",
+        desc: "Specializing in traditional Chinese tea | Century-old tea culture | Tea house experience (Oolong/Black/White/Green/Dark/Jasmine Tea)",
+        phone: "+86 (021) 64312052",
+        email: "nanxiangtea@hotmail.com",
+        address: "No. 18 Fuxing West Road, Xuhui District, Shanghai, China",
+        website: "Instagram: NANXIANGTEAHOUSE\nWhatsApp/Kakao Talk: +82 10-4885-4196\nWeChat: Nanxiangtea8888",
+        lat: "",
+        lng: ""
+    };
+
+    // 当前语言
+    let currentLang = 'zh';
+    // 存储中英文独立数据（从 localStorage 加载）
+    let shopDataZh = null;
+    let shopDataEn = null;
+
+    // ---------- 工具函数 ----------
+    function encodeShopData(shop) {
+        try {
+            const jsonStr = JSON.stringify(shop);
+            const utf8Bytes = unescape(encodeURIComponent(jsonStr));
+            const base64 = btoa(utf8Bytes);
+            return base64;
+        } catch(e) {
+            console.error("编码失败", e);
+            return "";
+        }
+    }
+
+    function decodeShopData(base64Str) {
+        try {
+            const utf8Bytes = atob(base64Str);
+            const jsonStr = decodeURIComponent(escape(utf8Bytes));
+            return JSON.parse(jsonStr);
+        } catch(e) {
+            console.error("解码失败", e);
+            return null;
+        }
+    }
+
+    function getBaseUrl() {
+        return window.location.href.split('?')[0];
+    }
+
+    function getShareUrl(shopData) {
+        const encoded = encodeShopData(shopData);
+        if (!encoded) return getBaseUrl();
+        return getBaseUrl() + '?data=' + encodeURIComponent(encoded);
+    }
+
+    function generateQRCode(canvasElement, url) {
+        if (!canvasElement) return;
+        try {
+            let qr = qrcode(0, 'M');
+            qr.addData(url);
+            qr.make();
+            const cellSize = 4;
+            const margin = 4;
+            const qrSize = qr.getModuleCount();
+            const canvasSize = (qrSize + margin * 2) * cellSize;
+            canvasElement.width = canvasSize;
+            canvasElement.height = canvasSize;
+            const ctx = canvasElement.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvasSize, canvasSize);
+            ctx.fillStyle = '#000000';
+            for (let row = 0; row < qrSize; row++) {
+                for (let col = 0; col < qrSize; col++) {
+                    if (qr.isDark(row, col)) {
+                        ctx.fillRect((col + margin) * cellSize, (row + margin) * cellSize, cellSize, cellSize);
+                    }
+                }
+            }
+        } catch(e) {
+            console.error("生成二维码失败", e);
+            if (canvasElement) canvasElement.style.display = 'none';
+        }
+    }
+
+    function downloadQR(canvasElement, shopName) {
+        if (!canvasElement) return;
+        const link = document.createElement('a');
+        link.download = `${shopName || 'shop'}_qrcode.png`;
+        link.href = canvasElement.toDataURL();
+        link.click();
+    }
+
+    function generateVCard(shop) {
+        let vcard = "BEGIN:VCARD\r\nVERSION:3.0\r\n";
+        vcard += `FN:${shop.name || '店铺名片'}\r\n`;
+        vcard += `ORG:${shop.name || ''}\r\n`;
+        if (shop.phone) vcard += `TEL;TYPE=CELL,VOICE:${shop.phone}\r\n`;
+        if (shop.email) vcard += `EMAIL:${shop.email}\r\n`;
+        if (shop.address) vcard += `ADR;TYPE=WORK:;;${shop.address};;;;\r\n`;
+        if (shop.website) vcard += `URL:${shop.website}\r\n`;
+        if (shop.desc) vcard += `NOTE:${shop.desc}\r\n`;
+        vcard += "END:VCARD\r\n";
+        return vcard;
+    }
+
+    function saveContactAsVCF(shop) {
+        const vcardData = generateVCard(shop);
+        const blob = new Blob([vcardData], { type: "text/vcard" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${shop.name || 'business'}_contact.vcf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function openMap(address, lat, lng) {
+        if (!address && (!lat || !lng)) {
+            alert(uiText[currentLang].noAddress);
+            return;
+        }
+        let query = address ? encodeURIComponent(address) : `${lat},${lng}`;
+        let googleUrl = `https://maps.google.com/?q=${query}`;
+        let amapUrl = `https://uri.amap.com/search?keyword=${query}`;
+        if (confirm(uiText[currentLang].mapConfirm)) {
+            window.open(googleUrl, '_blank');
+        } else {
+            window.open(amapUrl, '_blank');
+        }
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // 保存当前语言的数据到 localStorage
+    function saveShopData(lang, data) {
+        if (lang === 'zh') {
+            shopDataZh = data;
+            localStorage.setItem('shopDataZh', JSON.stringify(data));
+        } else {
+            shopDataEn = data;
+            localStorage.setItem('shopDataEn', JSON.stringify(data));
+        }
+    }
+
+    // 加载存储的数据，若无则使用默认
+    function loadShopData() {
+        try {
+            const storedZh = localStorage.getItem('shopDataZh');
+            shopDataZh = storedZh ? JSON.parse(storedZh) : { ...defaultShopZh };
+            const storedEn = localStorage.getItem('shopDataEn');
+            shopDataEn = storedEn ? JSON.parse(storedEn) : { ...defaultShopEn };
+        } catch(e) {
+            shopDataZh = { ...defaultShopZh };
+            shopDataEn = { ...defaultShopEn };
+        }
+    }
+
+    // 查看模式渲染 (客户扫码)
+    function renderViewMode(shopData) {
+        const appDiv = document.getElementById('app');
+        if (!shopData) {
+            appDiv.innerHTML = `<div class="card" style="text-align:center; padding:40px;"><span style="font-size:48px;">⚠️</span><h3>${uiText[currentLang].invalidData}</h3><a href="${getBaseUrl()}" class="back-link" style="margin-top:20px; display:inline-block;">${uiText[currentLang].backEdit}</a></div>`;
+            return;
+        }
+
+        const t = uiText[currentLang];
+        const name = escapeHtml(shopData.name) || '店铺名称';
+        const desc = escapeHtml(shopData.desc) || '';
+        const phone = escapeHtml(shopData.phone) || '';
+        const email = escapeHtml(shopData.email) || '';
+        const address = escapeHtml(shopData.address) || '';
+        const website = escapeHtml(shopData.website) || '';
+        const lat = shopData.lat ? parseFloat(shopData.lat) : null;
+        const lng = shopData.lng ? parseFloat(shopData.lng) : null;
+        const hasLocation = address || (lat && lng);
+
+        const html = `
+            <div style="margin-bottom: 8px;">
+                <a href="${getBaseUrl()}" class="back-link">${t.backEdit}</a>
+            </div>
+            <div class="card business-card mode-view">
+                <div class="shop-name">${name}</div>
+                ${desc ? `<div class="shop-desc">${desc}</div>` : ''}
+                ${phone ? `<div class="info-row"><div class="info-icon">📞</div><div class="info-text"><a href="tel:${phone}">${phone}</a> <span style="font-size:12px; color:#6c86a3;">(${t.call})</span></div></div>` : ''}
+                ${email ? `<div class="info-row"><div class="info-icon">✉️</div><div class="info-text"><a href="mailto:${email}">${email}</a> <span style="font-size:12px;">(${t.sendEmail})</span></div></div>` : ''}
+                ${address ? `<div class="info-row"><div class="info-icon">📍</div><div class="info-text">${address}</div></div>` : ''}
+                ${website ? `<div class="info-row"><div class="info-icon">🌐</div><div class="info-text">${website.replace(/\n/g, '<br>')}</div></div>` : ''}
+                <div class="button-group">
+                    ${phone ? `<button class="btn btn-primary" id="callBtn">📞 ${t.phoneLabel}</button>` : ''}
+                    ${email ? `<button class="btn btn-primary" id="emailBtn">✉️ ${t.emailLabel}</button>` : ''}
+                    <button class="btn btn-outline" id="saveContactBtn">➕ ${t.saveContact}</button>
+                    ${hasLocation ? `<button class="btn btn-outline" id="mapBtn">🗺️ ${t.viewMap}</button>` : ''}
+                </div>
+            </div>
+            <div class="card" style="background:#fafcff; text-align:center;">
+                <div style="font-size:14px; color:#2c3e66;">${t.scanAgain}</div>
+                <div style="font-size:13px; margin-top:12px;">${t.saveContactTip}</div>
+            </div>
+        `;
+        appDiv.innerHTML = html;
+
+        if (phone) document.getElementById('callBtn')?.addEventListener('click', () => window.location.href = `tel:${phone}`);
+        if (email) document.getElementById('emailBtn')?.addEventListener('click', () => window.location.href = `mailto:${email}`);
+        document.getElementById('saveContactBtn')?.addEventListener('click', () => saveContactAsVCF(shopData));
+        if (hasLocation) {
+            document.getElementById('mapBtn')?.addEventListener('click', () => openMap(address, lat, lng));
+        }
+    }
+
+    // 编辑模式渲染（支持双语内容切换）
+    function renderEditMode() {
+        const t = uiText[currentLang];
+        // 获取当前语言对应的数据
+        const currentShop = currentLang === 'zh' ? shopDataZh : shopDataEn;
+
+        // 生成预览卡片HTML
+        function generatePreviewHtml(data) {
+            const name = escapeHtml(data.name) || '店铺名称';
+            const desc = escapeHtml(data.desc);
+            const phone = escapeHtml(data.phone);
+            const email = escapeHtml(data.email);
+            const address = escapeHtml(data.address);
+            const website = escapeHtml(data.website);
+            const hasLoc = address || (data.lat && data.lng);
+            const websiteHtml = website ? website.replace(/\n/g, '<br>') : '';
+            return `
+                <div class="business-card" style="margin-bottom:0;">
+                    <div class="shop-name">${name}</div>
+                    ${desc ? `<div class="shop-desc">${desc}</div>` : `<div class="shop-desc" style="color:#cbd5e1;">${t.noDesc}</div>`}
+                    ${phone ? `<div class="info-row"><div class="info-icon">📞</div><div class="info-text">${phone}</div></div>` : ''}
+                    ${email ? `<div class="info-row"><div class="info-icon">✉️</div><div class="info-text">${email}</div></div>` : ''}
+                    ${address ? `<div class="info-row"><div class="info-icon">📍</div><div class="info-text">${address}</div></div>` : ''}
+                    ${websiteHtml ? `<div class="info-row"><div class="info-icon">🌐</div><div class="info-text">${websiteHtml}</div></div>` : ''}
+                    <div class="button-group" style="margin-top: 16px;">
+                        <button class="btn btn-outline" id="previewSaveContact" style="flex:1;">${t.saveContact}</button>
+                        ${hasLoc ? `<button class="btn btn-outline" id="previewMapBtn" style="flex:1;">${t.viewMap}</button>` : ''}
+                    </div>
+                    <div class="qr-tip" style="margin-top:12px;">${t.previewHint}</div>
+                </div>
+            `;
+        }
+
+        const editHtml = `
+            <div class="lang-bar">
+                <button class="lang-btn ${currentLang === 'zh' ? 'active' : ''}" data-lang="zh">${t.switchToZh}</button>
+                <button class="lang-btn ${currentLang === 'en' ? 'active' : ''}" data-lang="en">${t.switchToEn}</button>
+            </div>
+            <div class="card">
+                <div class="card-header">${t.cardHeaderInfo}</div>
+                <div class="form-group">
+                    <label>${t.shopNameLabel}</label>
+                    <input type="text" id="shopName" placeholder="${t.shopNamePlaceholder}" value="${escapeHtml(currentShop.name)}">
+                </div>
+                <div class="form-group">
+                    <label>${t.shopDescLabel}</label>
+                    <textarea id="shopDesc" rows="2" placeholder="${t.shopDescPlaceholder}">${escapeHtml(currentShop.desc)}</textarea>
+                </div>
+                <div class="row-2col">
+                    <div class="form-group">
+                        <label>${t.phoneLabel}</label>
+                        <input type="tel" id="shopPhone" placeholder="${t.phonePlaceholder}" value="${escapeHtml(currentShop.phone)}">
+                    </div>
+                    <div class="form-group">
+                        <label>${t.emailLabel}</label>
+                        <input type="email" id="shopEmail" placeholder="${t.emailPlaceholder}" value="${escapeHtml(currentShop.email)}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>${t.addressLabel}</label>
+                    <input type="text" id="shopAddress" placeholder="${t.addressPlaceholder}" value="${escapeHtml(currentShop.address)}">
+                </div>
+                <div class="row-2col">
+                    <div class="form-group">
+                        <label>${t.latLabel}</label>
+                        <input type="text" id="shopLat" placeholder="${t.latPlaceholder}" value="${escapeHtml(currentShop.lat)}">
+                    </div>
+                    <div class="form-group">
+                        <label>${t.lngLabel}</label>
+                        <input type="text" id="shopLng" placeholder="${t.lngPlaceholder}" value="${escapeHtml(currentShop.lng)}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>${t.websiteLabel}</label>
+                    <textarea id="shopWebsite" rows="3" placeholder="${t.websitePlaceholder}">${escapeHtml(currentShop.website)}</textarea>
+                    <div class="qr-tip" style="margin-top: 6px;">${t.websiteHint}</div>
+                </div>
+                <div class="qr-tip" style="margin-top: -8px; margin-bottom: 8px;">${t.coordHint}</div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">${t.previewHeader}</div>
+                <div id="previewCard"></div>
+            </div>
+
+            <div class="card" style="text-align:center;">
+                <div class="card-header">${t.qrHeader}</div>
+                <div class="qr-area">
+                    <canvas id="qrCanvas" class="qr-canvas" width="200" height="200"></canvas>
+                    <div class="button-group" style="justify-content: center;">
+                        <button class="btn btn-outline" id="downloadQRBtn">${t.downloadQR}</button>
+                        <button class="btn btn-outline" id="copyLinkBtn">${t.copyLink}</button>
+                    </div>
+                    <div class="qr-tip">
+                        ${t.qrTipLine1}<br>
+                        ${t.qrTipLine2}
+                    </div>
+                </div>
+            </div>
+            <footer>${t.footer}</footer>
+        `;
+
+        document.getElementById('app').innerHTML = editHtml;
+
+        // 获取表单元素并绑定实时更新
+        const nameInput = document.getElementById('shopName');
+        const descInput = document.getElementById('shopDesc');
+        const phoneInput = document.getElementById('shopPhone');
+        const emailInput = document.getElementById('shopEmail');
+        const addressInput = document.getElementById('shopAddress');
+        const websiteInput = document.getElementById('shopWebsite');
+        const latInput = document.getElementById('shopLat');
+        const lngInput = document.getElementById('shopLng');
+
+        const updatePreviewAndQR = () => {
+            const formData = {
+                name: nameInput.value.trim(),
+                desc: descInput.value.trim(),
+                phone: phoneInput.value.trim(),
+                email: emailInput.value.trim(),
+                address: addressInput.value.trim(),
+                website: websiteInput.value.trim(),
+                lat: latInput.value.trim(),
+                lng: lngInput.value.trim(),
+            };
+            if (!formData.name) formData.name = "未命名店铺";
+
+            // 更新预览卡片
+            const previewDiv = document.getElementById('previewCard');
+            if (previewDiv) {
+                previewDiv.innerHTML = generatePreviewHtml(formData);
+                const previewSaveBtn = previewDiv.querySelector('#previewSaveContact');
+                if (previewSaveBtn) previewSaveBtn.onclick = () => saveContactAsVCF(formData);
+                const previewMapBtn = previewDiv.querySelector('#previewMapBtn');
+                if (previewMapBtn) previewMapBtn.onclick = () => openMap(formData.address, formData.lat, formData.lng);
+            }
+
+            // 生成二维码
+            const shareUrl = getShareUrl(formData);
+            const canvas = document.getElementById('qrCanvas');
+            if (canvas) generateQRCode(canvas, shareUrl);
+
+            // 绑定下载和复制按钮
+            const downloadBtn = document.getElementById('downloadQRBtn');
+            if (downloadBtn) downloadBtn.onclick = () => downloadQR(canvas, formData.name);
+            const copyLinkBtn = document.getElementById('copyLinkBtn');
+            if (copyLinkBtn) {
+                copyLinkBtn.onclick = () => {
+                    navigator.clipboard.writeText(shareUrl).then(() => alert(t.copySuccess)).catch(() => alert(t.copyFail));
+                };
+            }
+
+            // 实时保存当前语言的数据
+            const currentData = {
+                name: formData.name,
+                desc: formData.desc,
+                phone: formData.phone,
+                email: formData.email,
+                address: formData.address,
+                website: formData.website,
+                lat: formData.lat,
+                lng: formData.lng,
+            };
+            saveShopData(currentLang, currentData);
+        };
+
+        // 监听所有输入事件
+        const inputs = [nameInput, descInput, phoneInput, emailInput, addressInput, websiteInput, latInput, lngInput];
+        inputs.forEach(input => {
+            if (input) input.addEventListener('input', updatePreviewAndQR);
+        });
+
+        // 初始化预览和二维码
+        updatePreviewAndQR();
+
+        // 语言切换逻辑
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const newLang = btn.getAttribute('data-lang');
+                if (newLang === currentLang) return;
+                // 切换语言前，先保存当前语言的数据（已在update中自动保存，但为确保，再存一次）
+                const currentData = {
+                    name: nameInput.value.trim(),
+                    desc: descInput.value.trim(),
+                    phone: phoneInput.value.trim(),
+                    email: emailInput.value.trim(),
+                    address: addressInput.value.trim(),
+                    website: websiteInput.value.trim(),
+                    lat: latInput.value.trim(),
+                    lng: lngInput.value.trim(),
+                };
+                saveShopData(currentLang, currentData);
+                // 更新当前语言
+                currentLang = newLang;
+                // 重新渲染编辑界面
+                renderEditMode();
+            });
+        });
+    }
+
+    // ---------- 初始化 ----------
+    function init() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const encodedData = urlParams.get('data');
+        if (encodedData) {
+            // 查看模式
+            const shopData = decodeShopData(decodeURIComponent(encodedData));
+            if (shopData && shopData.name) {
+                renderViewMode(shopData);
+            } else {
+                renderViewMode(null);
+            }
+        } else {
+            // 编辑模式：加载双语数据，然后渲染
+            loadShopData();
+            renderEditMode();
+        }
+    }
+
+    init();
+</script>
+</body>
+</html>
